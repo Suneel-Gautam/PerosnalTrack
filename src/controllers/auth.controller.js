@@ -59,6 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
 })
+
 const loginUser = asyncHandler(async (req, res) => {
     // loginUser
     const { email, password } = req.body
@@ -117,7 +118,20 @@ const logout = asyncHandler(async (req, res) => {
         ))
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
+})
 
+const editProfile = asyncHandler(async (req, res) => {
+
+    const { fullname, phoneNumber } = req.body
+
+
+
+})
+const forgetPassword = asyncHandler(async (req, res) => {
+
+})
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
