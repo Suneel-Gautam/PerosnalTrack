@@ -1,1 +1,2 @@
 export const DATABASE_NAME = "dailytrack"
+
