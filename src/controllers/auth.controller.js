@@ -2,6 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiReponse } from "../utils/ApiReponse.js";
+import jwt from 'jsonwebtoken'
+import { fileUpload } from "../utils/imageUpload.js";
 
 const options = {
     httpOnly: true,
@@ -147,6 +149,37 @@ const editProfile = asyncHandler(async (req, res) => {
 })
 
 const changeProfilePic = asyncHandler(async (req, res) => {
+    const profilePic = req.file?.profilePic.path
+    const userId = req.user._id
+
+    const response = await fileUpload(profilePic)
+
+    if (!response) {
+        throw new ApiError(400, "")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        userId,
+        {
+            $set: {
+                profilePic: response
+            }
+        },
+        {
+            new: true
+        }
+
+    ).select('-password -refreshToken')
+
+    if (!user) {
+        throw new ApiError(404, "User not found!!")
+    }
+
+    res.status(200).json(ApiReponse(
+        200,
+        user,
+        "Profile Changed Sucessfully!!"
+    ))
 
 })
 
@@ -182,6 +215,44 @@ const forgetPassword = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
 
+    const token = req.cookies.refreshToken || req.body.refreshToken
+
+    if (!token) {
+        throw new ApiError(400, "Missing RefreshToken!!")
+    }
+
+    const decoded = jwt.verify(token, process.env.REFRESHTOKEN_JWT_SECRET)
+
+    if (!decoded) {
+        throw new ApiError(403, "Unuthaozied!! invalid token!!")
+    }
+
+    const user = await User.findById(decoded._id)
+
+    if (!user) {
+        throw new ApiError(404, "User Not Found!!!")
+    }
+
+    if (!(user.refreshToken === token)) {
+        throw new ApiError(404, "Token doesnt match!!!")
+    }
+
+    const { accessToken, refreshToken } = await generateAcessRefreshToken(user._id)
+
+    const filterUser = await User.findById(user._id).select('-password -refreshToken')
+
+    res.status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(ApiReponse(
+            200,
+            {
+                user: filterUser,
+                accessToken,
+                refreshToken
+            },
+            "Token Refreshed Successfully!!"
+        ))
 })
 
 export {
@@ -189,5 +260,7 @@ export {
     loginUser,
     logout,
     editProfile,
-    forgetPassword
+    forgetPassword,
+    refreshAccessToken,
+    changeProfilePic
 } 
