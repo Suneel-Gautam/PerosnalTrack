@@ -55,9 +55,6 @@ const registerUser = asyncHandler(async (req, res) => {
         ))
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-
-
-
 })
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -123,11 +120,63 @@ const logout = asyncHandler(async (req, res) => {
 const editProfile = asyncHandler(async (req, res) => {
 
     const { fullname, phoneNumber } = req.body
+    const userId = req.user._id
 
+    const user = await User.findByIdAndUpdate(
+        userId,
+        {
+            $set: {
+                fullname,
+                phoneNumber
+            }
+        },
+        {
+            new: true
+        }
+    ).select('-password -refreshToken')
 
+    if (!user) {
+        throw new ApiError(404, "User not Found!!!")
+    }
+
+    return res.status(200).json(ApiReponse(
+        200,
+        user,
+        "Profile Updated Sucessfully!!"
+    ))
+})
+
+const changeProfilePic = asyncHandler(async (req, res) => {
 
 })
+
 const forgetPassword = asyncHandler(async (req, res) => {
+
+    const { oldPassword, newPassword } = req.body
+    const userId = req.user._id
+
+    if (!oldPassword || !newPassword) {
+        throw new ApiError(400, "Please provide both oldpassword and newpassword")
+    }
+
+    const user = await User.findById(userId)
+
+    const checkPassword = await user.isPasswordCorrect(oldPassword)
+    if (!checkPassword) {
+        throw new ApiError(400, "Incorrect OldPassword!!")
+    }
+    user.password = newPassword
+    await user.save({ validateBeforeSave: false })
+    const filterUser = await User.findById(user._id).select("-password -refreshToken")
+    res.status(200).json(ApiReponse(
+        200,
+        {
+            user: filterUser
+        },
+        "Password Updated Sucessfully!!"
+
+    ))
+
 
 })
 
@@ -138,5 +187,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 export {
     registerUser,
     loginUser,
-    logout
+    logout,
+    editProfile,
+    forgetPassword
 } 
