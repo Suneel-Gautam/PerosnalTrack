@@ -14,13 +14,21 @@ const habitSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    trackingTypes: {
+        type: String,
+        enum: ["duration", "count", "quantity", "boolean"]
+    },
     unit: {
         type: String,
-        required: true
     },
     frequency: {
         type: String,
-        enum: ['Daily', "Weekly"]
+        enum: ['Daily', "Weekly", "Custom"],
+        default: 'Daily'
+    },
+    custom: {
+        type: String,
+        enum: ["S", "M", "T", "W", "T", "F", "S"]
     },
     date: {
         type: String,
@@ -29,6 +37,10 @@ const habitSchema = mongoose.Schema({
     isActive: {
         type: Boolean,
         required: true
+    },
+    visibility: {
+        type: String,
+        enum: ["private", "friends", "public"]
     },
     userId: {
         type: mongoose.Schema.ObjectId,
