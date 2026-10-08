@@ -6,11 +6,6 @@ const categorySchema = mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-        required: true
-    },
     description: {
         type: String,
     },
@@ -23,3 +18,5 @@ const categorySchema = mongoose.Schema({
 })
 
 const Category = mongoose.model("Category", categorySchema)
+
+export default Category
