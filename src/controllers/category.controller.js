@@ -71,7 +71,6 @@ const fetchallHabit = asyncHandler(async (req, res) => {
 const deleteHabit = asyncHandler(async (req, res) => {
     const id = req.params.id
 
-
     const category = await Category.findOneAndDelete(id)
     if (!category) {
         throw new ApiError(404, "Category not found!!")

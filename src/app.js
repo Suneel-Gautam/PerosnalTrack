@@ -9,7 +9,7 @@ app.use(cors())
 app.use(handleError)
 
 
-//import user route
+//import route
 import authRoute from './routes/auth.route.js'
 import categoryRoute from './routes/category.route.js'
 

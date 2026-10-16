@@ -36,11 +36,13 @@ const habitSchema = mongoose.Schema({
     },
     isActive: {
         type: Boolean,
+        default: true,
         required: true
     },
     visibility: {
         type: String,
-        enum: ["private", "friends", "public"]
+        enum: ["private", "friends", "public"],
+        default: "public"
     },
     userId: {
         type: mongoose.Schema.ObjectId,
