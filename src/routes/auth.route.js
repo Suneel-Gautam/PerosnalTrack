@@ -36,5 +36,4 @@ router.route('/forgetPassword').patch(
 router.route('/refreshAccessToken').post(refreshAccessToken)
 
 
-
 export default router

@@ -12,9 +12,11 @@ app.use(handleError)
 //import route
 import authRoute from './routes/auth.route.js'
 import categoryRoute from './routes/category.route.js'
+import habitRoute from './routes/habit.route.js'
 
 app.use('/v2/api/auth', authRoute)
 app.use('/v2/api/category', categoryRoute)
+app.use('/v2/api/habit', habitRoute)
 
 
 app.get('/', (req, res) => {

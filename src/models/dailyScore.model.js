@@ -33,3 +33,5 @@ const dailyScoreSchema = mongoose.Schema({
 
 
 const DailyScore = mongoose.Model("DailyScore", dailyScoreSchema)
+
+export default DailyScore
